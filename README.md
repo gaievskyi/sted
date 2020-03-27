@@ -1,16 +1,18 @@
 # **STED**
 
-Small text beautifier. Formats directly typed texts and ready txt-files. :snake: 
+Small text beautifier. Formats directly typed texts and ready txt-files. :snake:
 
-**Usage**: 
-```
+**Usage**:
+
+```Terminal
 >>> python sted.py <text or path to txt-file> --spaces --capitals --stats --mistakes --path </some/path>
 
 >>> python sted.py <text or path to txt-file> -sctm -p </some/path>
 ```
 
 **Options**:
-```
+
+```Terminal
 <path/text>: can be a path to your text-file OR directly typed text.
 
 -s, --spaces: Format spaces in the text. Remove exta spaces.
@@ -19,15 +21,16 @@ Small text beautifier. Formats directly typed texts and ready txt-files. :snake:
 
 -m, --mistakes: Find mistakes and print info.
 
--t, --stats: Return statistics of a text (words, spaces, etc). 
+-t, --stats: Return statistics of a text (words, spaces, etc).
 
 
--p, path </some/path>: Path where formatted text will be written. 
+-p, path </some/path>: Path where formatted text will be written.
 ```
 
 **Examples**:
-```
+
+```Terminal
 >>> python sted.py text.txt -sctm -p new_text.txt
 
->>> python sted.py "  hello,world!" -sc
+>>> python sted.py "hello,world!  " -sc
 ```
