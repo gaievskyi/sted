@@ -1,8 +1,7 @@
 # STED: text beautifier. Python3 required.
-# Functions module located at `sted/functions.py`
-import functions as f
-# `sted/arguments.py`
-import arguments
+
+import scripts.functions as f
+import scripts.arguments as arg
 
 
 def stedtxt(unformatted_text: str,
@@ -15,8 +14,7 @@ def stedtxt(unformatted_text: str,
     """
     Allows to format a text according to printing standarts.
     Supports autocapitalize, autospaces after punctuation marks
-    etc. Works with (.txt), (.docx), (.rtf), try other extensions
-    on your own risk.
+    etc.
 
     Args:
         unformatted_text (str): path to your text file / inline text
@@ -24,7 +22,7 @@ def stedtxt(unformatted_text: str,
         capitals (bool): autocapitalize where needed (new sentence)
         find_mistakes (bool): check for mistakes in the text, print log
         stats (bool): print statistics (letters, sentences etc)
-        path (str or None): path to write the file 
+        path (str or None): path to write the file
     """
     formatted_text = f.read_text(unformatted_text)
     mistakes = ""
@@ -43,6 +41,8 @@ def stedtxt(unformatted_text: str,
     if stats:
         statistics += f.get_stats(formatted_text)
 
+    formatted_text += "." if not formatted_text.endswith(".") else ""
+
     # Write a file if [text_out] is flagged:
     if path is not None:
         console_log += "[*] Additional info:\n" if stats or find_mistakes else ""
@@ -58,5 +58,5 @@ def stedtxt(unformatted_text: str,
 
 
 if __name__ == "__main__":
-    args = arguments.args()
+    args = arg.args()
     print(stedtxt(*args))
