@@ -1,18 +1,22 @@
 """
 This file can also be imported as a module and contains the following functions:
     * read_text - opens a file with a text if exists, otherwise reads [text_in] as a text
-    * format_spaces - formats spaces in the text
-    * to_uppercase - capitalizes letters where needed (new sentence)
+    * remove_extra_spaces - formats spaces in the text; removes extra spaces
+    * format_punctuation - formats spaces in the text; formatss punctuation signs
+    * format_uppercase - capitalizes letters where needed (new sentence, etc)
     * get_stats - returns statistics (letters, sentences etc)
     * find_mistakes - checks for mistakes in the text, prints log (supported: Polish)
     * write_file - writes formatted text to the path.
 """
 
+
+import re
 from common.constants import *
 
 
 def read_text(unformatted_text: str) -> str:
-    """Tries to open a file with text, otherwise reads [text_in] as text.
+    """Tries to open a file with text,
+    otherwise reads [unformatted_text] as a text.
 
     Arguments:
         unformatted_text (str) -- path to the file or inputed text.
@@ -41,36 +45,45 @@ def read_text(unformatted_text: str) -> str:
     return text
 
 
-def format_spaces(text: str) -> str:
+def remove_extra_spaces(string: str) -> str:
     """Formats spaces in the text. Removes exta spaces.
 
-    Arguments:
-        text (str) -- stores the original text
+    Args:
+        string (str) -- stores the original text
 
     Returns:
         text (str) -- returns formatted text
     """
-    punctuation = ",./!?"
+    result = re.sub(r"  ", " ", string)
+    return remove_extra_spaces(result) if re.findall(r"  ", result) else result
 
-    for i in range(len(text)-1):
-        # removing 2+ extra spaces in a row
-        if text[i] == " " and text[i+1] == " ":
-            text = text[:i] + text[i+1:]
-            return format_spaces(text)
-        # formating spaces before/after special symbols
-        if text[i] in punctuation:
+
+def format_punctuation(string: str) -> str:
+    """Formats spaces in the text. Removes/adds spaces
+    around the punctuation signs.
+
+    Args:
+        string (str) -- stores the original text
+
+    Returns:
+        text (str) -- returns formatted text
+    """
+
+    punctuation = (",", ".", "!", "?")
+    for i in range(len(string)-1):
+        if string[i] in punctuation:
             # del before symbols
-            if text[i-1] == " ":
-                text = text[:i-1] + text[i:]
-                return format_spaces(text)
+            if string[i-1] == " ":
+                string = string[:i-1] + string[i:]
+                return format_punctuation(string)
             # add after symbols
-            if text[i+1] != " ":
-                text = text[:i+1] + " " + text[i+1:]
-                return format_spaces(text)
-    return text
+            if string[i+1] != " " and string[i+1] != "\n":
+                string = string[:i+1] + " " + string[i+1:]
+                return format_punctuation(string)
+    return string
 
 
-def to_uppercase(text: str) -> str:
+def format_uppercase(text: str) -> str:
     """Capitalizes the letters where it's needed (new sentence, etc).
 
     Arguments:
@@ -93,12 +106,13 @@ def to_uppercase(text: str) -> str:
         'акад.', 'доц.', 'ж. д.', 'ж.-д.', 'им.', 'ин-т', 'шт.', 'тип.',
         'укр.', 'унив.', 'яз.', 'чл.', 'цифр.', 'цв.'
     )
+    punctuation = (".", "!", "?", ".\n", "!\n", "?\n")
 
     text = text.replace("\n", "\n ").split(" ")
     text[0] = text[0].capitalize()
 
     for el in range(len(text)-1):
-        if text[el].endswith((".", ".\n", "!", "!\n", "?", "?\n")):
+        if text[el].endswith(punctuation):
             if text[el] not in abbreviations:
                 text[el+1] = text[el+1].capitalize()
 
@@ -124,8 +138,7 @@ def get_stats(text: str) -> str:
     symbols = len(text) - spaces
     for _ in separators:
         text = text.replace(_, "")
-    words = len(text.replace("\n", " ").strip().split(
-        " ")) if len(text) != 0 else 0
+    words = len(text.replace("\n", " ").strip().split(" ")) if len(text) != 0 else 0
     return f"Spaces: [{spaces}] Lines: [{lines}] Symbols: [{symbols}] Words: [{words}]"
 
 
@@ -185,25 +198,25 @@ def write_file(path: str, formatted_text: str) -> None:
             f.write(formatted_text)
 
     if path.endswith((".txt", ".rtf", ".docx", ".doc", ".pdf", ".odt")):
-        try: # if text was read from file
+        try:  # if text was read from file
             if path != in_path:
                 do_writing(path)
                 return message
-
             # else: rewrite the file
             answer = input(REWRITE)
             while True:
-               if answer in POSITIVE_ANSWERS:
-                   do_writing(path)
-                   return message
-               elif answer in NEGATIVE_ANSWERS:
-                   path = input(ENTER_AGAIN)
-                   return write_file(path, formatted_text)
-               else:
-                   answer = input(INVALID_ANSWER_TRY_AGAIN)
+                if answer in POSITIVE_ANSWERS:
+                    do_writing(path)
+                    return message
+                elif answer in NEGATIVE_ANSWERS:
+                    path = input(ENTER_AGAIN)
+                    return write_file(path, formatted_text)
+                else:
+                    answer = input(INVALID_ANSWER_TRY_AGAIN)
 
-        except NameError: # if text was read directly.
+        except NameError:  # if text was read directly.
             do_writing(path)
             return message
     else:
-        raise EnvironmentError("File extension must be .txt, .rtf, .docx, .doc, .pdf, .odt")
+        raise EnvironmentError(
+            "File extension must be .txt, .rtf, .docx, .doc, .pdf, .odt")
