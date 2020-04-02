@@ -1,6 +1,5 @@
 """
-This file can also be imported as a module and contains the following
-functions:
+This file can also be imported as a module and contains the following functions:
     * read_text - opens a file with a text if exists, otherwise reads [text_in] as a text
     * format_spaces - formats spaces in the text
     * to_uppercase - capitalizes letters where needed (new sentence)
@@ -21,7 +20,6 @@ def read_text(unformatted_text: str) -> str:
     Returns:
         text (str) -- reads and returns text as a string
     """
-
     try:
         with open(unformatted_text, "rt") as f:
             # creating global var needed at writing func.
@@ -194,14 +192,15 @@ def write_file(path: str, formatted_text: str) -> None:
 
             # else: rewrite the file
             answer = input(REWRITE)
-            if answer in POSITIVE_ANSWERS:
-                do_writing(path)
-                return message
-            elif answer in NEGATIVE_ANSWERS:
-                path = input(ENTER_AGAIN)
-                return write_file(path, formatted_text)
-            else:
-                answer = input(INVALID_ANSWER_TRY_AGAIN)
+            while True:
+               if answer in POSITIVE_ANSWERS:
+                   do_writing(path)
+                   return message
+               elif answer in NEGATIVE_ANSWERS:
+                   path = input(ENTER_AGAIN)
+                   return write_file(path, formatted_text)
+               else:
+                   answer = input(INVALID_ANSWER_TRY_AGAIN)
 
         except NameError: # if text was read directly.
             do_writing(path)
