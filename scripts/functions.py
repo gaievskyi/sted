@@ -1,28 +1,15 @@
-"""
-This file can also be imported as a module and contains the following functions:
-    * read_text - opens a file with a text if exists, otherwise reads [text_in] as a text
-    * remove_extra_spaces - formats spaces in the text; removes extra spaces
-    * format_punctuation - formats spaces in the text; formatss punctuation signs
-    * format_uppercase - capitalizes letters where needed (new sentence, etc)
-    * get_stats - returns statistics (letters, sentences etc)
-    * find_mistakes - checks for mistakes in the text, prints log (supported: Polish)
-    * write_file - writes formatted text to the path.
-"""
-
-
-import re
+from re import sub, findall
 from common.constants import *
 
 
 def read_text(unformatted_text: str) -> str:
-    """Tries to open a file with text,
-    otherwise reads [unformatted_text] as a text.
+    """Open text from the file or read it directly.
 
     Arguments:
-        unformatted_text (str) -- path to the file or inputed text.
+        unformatted_text (str): path to a file OR inputed text
 
     Returns:
-        text (str) -- reads and returns text as a string
+        (str): reads and returns text as a text
     """
     try:
         with open(unformatted_text, "rt") as f:
@@ -30,67 +17,67 @@ def read_text(unformatted_text: str) -> str:
             global in_path
             in_path = unformatted_text
             # reading data
-            text = f.read()
+            txt = f.read()
+
     except FileNotFoundError:
         answer = input(READ_AS_TEXT)
         while True:
             if answer in POSITIVE_ANSWERS:
-                text = unformatted_text
+                txt = unformatted_text
                 break
             elif answer in NEGATIVE_ANSWERS:
                 unformatted_text = input(ENTER_AGAIN)
                 return read_text(unformatted_text)
             else:
                 answer = input(INVALID_ANSWER_TRY_AGAIN)
-    return text
+    return txt
 
 
-def remove_extra_spaces(string: str) -> str:
-    """Formats spaces in the text. Removes exta spaces.
-
-    Args:
-        string (str) -- stores the original text
-
-    Returns:
-        text (str) -- returns formatted text
-    """
-    result = re.sub(r"  ", " ", string)
-    return remove_extra_spaces(result) if re.findall(r"  ", result) else result
-
-
-def format_punctuation(string: str) -> str:
-    """Formats spaces in the text. Removes/adds spaces
-    around the punctuation signs.
+def remove_extra_spaces(txt: str) -> str:
+    """Remove exta spaces.
 
     Args:
-        string (str) -- stores the original text
+        txt (str): stores the original text
 
     Returns:
-        text (str) -- returns formatted text
+        (str): returns formatted text
     """
+    result = sub(r"  ", " ", txt)
+    return remove_extra_spaces(result) if findall("  ", result) else result
 
+
+def format_punctuation(txt: str) -> str:
+    """Remove or add spaces around the punctuation signs.
+
+    Args:
+        txt (str): stores the original text
+
+    Returns:
+        (str): returns formatted text
+    """
     punctuation = (",", ".", "!", "?")
-    for i in range(len(string)-1):
-        if string[i] in punctuation:
+
+    for i in range(len(txt)-1):
+        if txt[i] in punctuation:
             # del before symbols
-            if string[i-1] == " ":
-                string = string[:i-1] + string[i:]
-                return format_punctuation(string)
+            if txt[i-1] == " ":
+                txt = txt[:i-1] + txt[i:]
+                return format_punctuation(txt)
             # add after symbols
-            if string[i+1] != " " and string[i+1] != "\n":
-                string = string[:i+1] + " " + string[i+1:]
-                return format_punctuation(string)
-    return string
+            if txt[i+1] != " " and txt[i+1] != "\n":
+                txt = txt[:i+1] + " " + txt[i+1:]
+                return format_punctuation(txt)
+    return txt
 
 
-def format_uppercase(text: str) -> str:
-    """Capitalizes the letters where it's needed (new sentence, etc).
+def format_uppercase(txt: str) -> str:
+    """Capitalize letters where it's needed (new sentence, etc).
 
     Arguments:
-        text (str) -- stores the original text
+        txt (str): stores the original text
 
     Returns:
-        text (str) -- returns formatted text
+        (str): returns formatted text
     """
     abbreviations = (
         'al.', 'cd.', 'cdn.', 'col.', 'cykl.', 'cyt.', 'cz.', 'dosł.',
@@ -98,82 +85,83 @@ def format_uppercase(text: str) -> str:
         'mies.', 'mkw.', 'muz.', 'n.e.', 'n.p.m.', 'nast.', 'np.', 'nw.',
         'o.o.', 'p.n.e.', 'p.o.', 'pl.', 'pn.', 'pt.', 'płd.', 'płn.',
         'rys.', 'sp.', 'str.', 'tab.', 'tj.', 'tzn.', 'tzw.', 'wsch.',
-        'zach.', 'zob.', 'źr.', 'żeń.', 'approx.' 'appt.', 'A.S.A.P.',
-        'B.Y.O.B.', 'dept.', 'D.I.Y.', 'est.', 'E.T.A.', 'min.', 'misc.',
-        'R.S.V.P.', 'tel.', 'temp.', 'vet.', 'vs.', 'Ave.', 'Blvd.', 'Dr.',
-        'St.', 'e.g.', 'etc.', 'i.e.', 'n.b.', 'P.S.', 'т. е.', 'и т. д.',
-        'и т. п.', 'и др.', 'и пр.', 'см.', 'н. э.', 'обл.', 'гp.', 'стр.',
-        'акад.', 'доц.', 'ж. д.', 'ж.-д.', 'им.', 'ин-т', 'шт.', 'тип.',
-        'укр.', 'унив.', 'яз.', 'чл.', 'цифр.', 'цв.'
+        'zach.', 'zob.', 'źr.', 'żeń.', 'approx.' 'appt.', 'A.S.A.P.'
     )
     punctuation = (".", "!", "?", ".\n", "!\n", "?\n")
 
-    text = text.replace("\n", "\n ").split(" ")
-    text[0] = text[0].capitalize()
+    txt = txt.replace("\n", "\n ").split(" ")
+    txt[0] = txt[0].capitalize()
 
-    for el in range(len(text)-1):
-        if text[el].endswith(punctuation):
-            if text[el] not in abbreviations:
-                text[el+1] = text[el+1].capitalize()
+    for el in range(len(txt)-1):
+        if txt[el].endswith(punctuation):
+            if txt[el] not in abbreviations:
+                txt[el+1] = txt[el+1].capitalize()
 
-    text = " ".join(text)
-    text = text.replace("\n ", "\n")
-    return text
+    txt = " ".join(txt)
+    txt = txt.replace("\n ", "\n")
+    return txt
 
 
-def get_stats(text: str) -> str:
-    """Returns the statistics of the text.
+def get_stats(txt: str) -> str:
+    """Return the statistics of the text.
     Contains quantity of spaces, lines, symbols, words.
 
     Arguments:
-        text (str) -- stores the original text
+        txt (str): stores the original text
 
     Returns:
-        (str) -- returns the statistics
+        (str): returns statistics
     """
-    separators = "\"\\!?.,{};:'\n()[-–|'<>«»~%“”„”_=*¯#+/]\f\t\r\v"
+    separators = "\"\\!?.,{};:'\n()[-|'<>«»~%“”„”_=*¯#+/]\f\t\r\v"
 
-    spaces = len([ch for ch in text if ch == " "])
-    lines = 1 + text.count("\n") if len(text) != 0 else 0
-    symbols = len(text) - spaces
+    spaces = txt.count(" ")
+    lines = len(txt.splitlines())
     for _ in separators:
-        text = text.replace(_, "")
-    words = len(text.replace("\n", " ").strip().split(" ")) if len(text) != 0 else 0
-    return f"Spaces: [{spaces}] Lines: [{lines}] Symbols: [{symbols}] Words: [{words}]"
+        txt = txt.replace(_, "")
+    symbols = len(txt) - spaces
+    words = len(txt.strip().split(" "))
+
+    return (f"\n{'-'*(9+len(str(max(spaces, lines, symbols, words))))}\n"  # print line '----'
+            f"Spaces:  {spaces}\n"
+            f"Lines:   {lines}\n"
+            f"Symbols: {symbols}\n"
+            f"Words:   {words}"
+            f"\n{'-'*(9+len(str(max(spaces, lines, symbols, words))))}")  # print line '----'
 
 
-def find_mistakes(text: str) -> str:
-    """Finds mistakes in the text and returns info.
+def find_mistakes(txt: str) -> str:
+    """Find mistakes and returns info.
 
     Arguments:
-        text (str) -- stores the original text
+        txt (str): stores the original text
 
     Returns:
-        info (str) -- returns the info about mistakes
+        (str): mistakes log
     """
     separators = "\"\\!?.,{};:'\n()[-–|'<>«»~%“”„”_=*¯#+/]\f\t\r\v"
 
-    # Cleaning up the text
+    # Clean up the txt
     for el in separators:
-        text = text.replace(el, " ")
+        txt = txt.replace(el, " ")
 
-    # Converting to the list & lowercase
-    text = text.lower().split()
+    # Convert to the list & lowercase
+    txt = txt.lower().split()
 
-    # Creating the Polish dict
+    # Create the Polish dict
     with open("common/dict.txt", "rt") as f:
         dictionary = f.read()
     dictionary = dictionary.split(" ")
 
-    # Searching mistakes
-    mistakes = [x for x in text if x not in dictionary]
+    # Search mistakes
+    mistakes = [x for x in txt if x not in dictionary]
 
-    # Returning result
+    # Return results
     info = ""
     if len(mistakes) == 0:
         info += "Mistakes were not found."
     else:
-        info += f"This words aren't in Polish dictionary. Check them for mistakes: {mistakes}"
+        info += ("|> This words aren't in Polish dictionary. "
+                 f"Check them for mistakes:\n{mistakes}")
     return info
 
 
@@ -181,16 +169,16 @@ def write_file(path: str, formatted_text: str) -> None:
     """Writes formatted text to the path.
 
     Arguments:
-        path (str) -- stores a path where will be formatted file
-        formatted_text (str) -- stores a formatted text
+        path (str): path to write formatted text
+        formatted_text (str): formatted text
 
     Raises:
-        EnvironmentError -- occured by wrong extensions of writting file.
+        EnvironmentError: wrong file extension.
 
     Returns:
-        message (str) -- succesful writting message
+        message (str): succesful writting message
     """
-    message = f"\n[=========] 100% Text has been succesfully written to '{path}'"
+    message = f"|> Text has been succesfully written into /{path}"
 
     # Alias for writing
     def do_writing(path) -> None:
@@ -198,7 +186,8 @@ def write_file(path: str, formatted_text: str) -> None:
             f.write(formatted_text)
 
     if path.endswith((".txt", ".rtf", ".docx", ".doc", ".pdf", ".odt")):
-        try:  # if text was read from file
+        # if text was read from file
+        try:
             if path != in_path:
                 do_writing(path)
                 return message
@@ -213,10 +202,10 @@ def write_file(path: str, formatted_text: str) -> None:
                     return write_file(path, formatted_text)
                 else:
                     answer = input(INVALID_ANSWER_TRY_AGAIN)
-
-        except NameError:  # if text was read directly.
+        # if text was read directly.
+        except NameError:
             do_writing(path)
             return message
     else:
-        raise EnvironmentError(
-            "File extension must be .txt, .rtf, .docx, .doc, .pdf, .odt")
+        raise OSError("File extension must be either "
+                      "'.txt', '.rtf', '.docx', '.doc', '.pdf', '.odt'")
