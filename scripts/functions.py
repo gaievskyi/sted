@@ -9,7 +9,7 @@ def read_text(unformatted_text: str) -> str:
         unformatted_text (str): path to a file OR inputed text
 
     Returns:
-        (str): reads and returns text as a text
+        str: reads and returns text as a text
     """
     try:
         with open(unformatted_text, "rt") as f:
@@ -40,7 +40,7 @@ def remove_extra_spaces(txt: str) -> str:
         txt (str): stores the original text
 
     Returns:
-        (str): returns formatted text
+        str: returns formatted text
     """
     result = sub(r"  ", " ", txt)
     return remove_extra_spaces(result) if findall("  ", result) else result
@@ -53,7 +53,7 @@ def format_punctuation(txt: str) -> str:
         txt (str): stores the original text
 
     Returns:
-        (str): returns formatted text
+        str: returns formatted text
     """
     punctuation = (",", ".", "!", "?")
 
@@ -77,7 +77,7 @@ def format_uppercase(txt: str) -> str:
         txt (str): stores the original text
 
     Returns:
-        (str): returns formatted text
+        str: returns formatted text
     """
     abbreviations = (
         'al.', 'cd.', 'cdn.', 'col.', 'cykl.', 'cyt.', 'cz.', 'dosł.',
@@ -110,7 +110,7 @@ def get_stats(txt: str) -> str:
         txt (str): stores the original text
 
     Returns:
-        (str): returns statistics
+        str: returns statistics
     """
     separators = "\"\\!?.,{};:'\n()[-|'<>«»~%“”„”_=*¯#+/]\f\t\r\v"
 
@@ -126,17 +126,17 @@ def get_stats(txt: str) -> str:
             f"Lines:   {lines}\n"
             f"Symbols: {symbols}\n"
             f"Words:   {words}"
-            f"\n{'-'*(9+len(str(max(spaces, lines, symbols, words))))}")  # print line '----'
+            f"\n{'-'*(9+len(str(max(spaces, lines, symbols, words))))}")   # print line '----'
 
 
 def find_mistakes(txt: str) -> str:
-    """Find mistakes and returns info.
+    """Find mistakes and return them.
 
     Arguments:
         txt (str): stores the original text
 
     Returns:
-        (str): mistakes log
+        str: mistakes log
     """
     separators = "\"\\!?.,{};:'\n()[-–|'<>«»~%“”„”_=*¯#+/]\f\t\r\v"
 
@@ -166,17 +166,17 @@ def find_mistakes(txt: str) -> str:
 
 
 def write_file(path: str, formatted_text: str) -> None:
-    """Writes formatted text to the path.
+    """"Writes formatted text to the path.
 
-    Arguments:
+    Args:
         path (str): path to write formatted text
         formatted_text (str): formatted text
 
     Raises:
-        EnvironmentError: wrong file extension.
+        OSError: wrong file extension
 
     Returns:
-        message (str): succesful writting message
+        str: succesful writting message
     """
     message = f"|> Text has been succesfully written into /{path}"
 
@@ -185,7 +185,10 @@ def write_file(path: str, formatted_text: str) -> None:
         with open(path, "wt") as f:
             f.write(formatted_text)
 
-    if path.endswith((".txt", ".rtf", ".docx", ".doc", ".pdf", ".odt")):
+    if not path.endswith((".txt", ".rtf", ".docx", ".doc", ".pdf", ".odt")):
+        raise OSError("File extension must be "
+                      "'.txt', '.rtf', '.docx', '.doc', '.pdf', '.odt'")
+    else:
         # if text was read from file
         try:
             if path != in_path:
@@ -206,6 +209,3 @@ def write_file(path: str, formatted_text: str) -> None:
         except NameError:
             do_writing(path)
             return message
-    else:
-        raise OSError("File extension must be either "
-                      "'.txt', '.rtf', '.docx', '.doc', '.pdf', '.odt'")
