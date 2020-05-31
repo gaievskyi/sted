@@ -32,27 +32,17 @@ def stedtxt(unformatted_text: str,
 
     Args:
         unformatted_text (str): path to your text file / inline text.
+        spaces (bool, optional): remove extra spaces. Defaults to False.
+        capitals (bool, optional): autocapitalize where needed (new sentence). Defaults to False.
+        find_mistakes (bool, optional): check for mistakes in the text, print log. Defaults to False.
+        stats (bool, optional): print statistics (letters, sentences etc). Defaults to False.
+        path (str | None, optional): path to write. Defaults to None.
 
-        spaces (bool, optional): remove extra spaces.
-        Defaults to False.
-
-        capitals (bool, optional): autocapitalize where needed (new sentence).
-        Defaults to False.
-
-        find_mistakes (bool, optional): check for mistakes in the text, print log.
-        Defaults to False.
-
-        stats (bool, optional): print statistics (letters, sentences etc).
-        Defaults to False.
-
-        path (str | None, optional): path to write.
-        Defaults to None.
+    Raises:
+        OSError: got file name with invalid extension in writting function.
 
     Returns:
         str: formatted text
-
-    Raises:
-        EnvironmentError: got file name with invalid extension in writting function.
     """
     formatted_text = f.read_text(unformatted_text)
     out = ""
@@ -72,7 +62,12 @@ def stedtxt(unformatted_text: str,
 
     # if `path` is defined, write the file:
     if path is not None:
-        return "\n" + f.write_file(path, formatted_text) + out
+        # if file extension is correct
+        try:
+            return "\n" + f.write_file(path, formatted_text) + out
+        # if file extension is invalid
+        except OSError as e:
+            return "|> " + str(e) + "\n" "Try again."
     # else, return results to console
     else:
         return "\n|> Formatted text:\n\n" + formatted_text + out
