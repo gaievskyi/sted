@@ -1,21 +1,16 @@
 """
 This file can also be imported as a module and contains the following
 functions:
-    * open_text - opens the file with a text if it exists, otherwise reads [text_in] as a text.
+    * read_text - opens the file with a text if it exists, otherwise reads [text_in] as a text.
     * format_spaces - formats spaces in the text.
     * to_uppercase - capitalizes the letters where it's needed.
     * get_stats - returns the statistics of the text.
     * find_mistakes - finds mistakes in the text and returns info. (supports Polish)
-    * text_out - writes formatted text to the path.
+    * write_file - writes formatted text to the path.
 """
 
 import argparse
 import sys
-
-
-POSITIVE_ANSWERS = ("Yes", 'Y', "y", "yes")
-NEGATIVE_ANSWERS = ("No", 'N', "n", "no")
-in_path = ""
 
 
 def args():
@@ -42,7 +37,6 @@ def args():
     # Write to file [optional]
     parser.add_argument("-p", "--path", required=False, metavar="path",
                         default=None, help="Path to output file('.txt', '.rtf', or '.doc')")
-
     args = parser.parse_args()
     _inpath = args.input[0]
     _spaces = args.spaces
@@ -53,29 +47,34 @@ def args():
     return _inpath, _spaces, _capitals, _mistakes, _stats, _path
 
 
-def open_text(text_in: str) -> str:
-    """Tries to open the file with a text, otherwise reads [text_in] as a text.
+def read_text(unformatted_text: str) -> str:
+    """Tries to open a file with text, otherwise reads [text_in] as text.
 
     Arguments:
-        text_in (str) -- path to the file or inputed text.
+        unformatted_text (str) -- path to the file or inputed text.
 
     Returns:
         text (str) -- reads and returns text as a string
     """
+    positive_answers = ("Yes", 'Y', "y", "yes")
+    negative_answers = ("No", 'N', "n", "no")
     try:
-        with open(text_in, "rt") as file:
-            in_path = text_in
-            text = file.read()
+        with open(unformatted_text, "rt") as f:
+            # creating global var needed at writing func.
+            global in_path
+            in_path = unformatted_text
+            # reading data
+            text = f.read()
     except FileNotFoundError:
         answer = input("[*] File was not found. Read as a text? (Y/n): ")
         while True:
-            if answer in POSITIVE_ANSWERS:
-                text = text_in
+            if answer in positive_answers:
+                text = unformatted_text
                 break
-            elif answer in NEGATIVE_ANSWERS:
-                text_in = input(
+            elif answer in negative_answers:
+                unformatted_text = input(
                     "[*] Please, enter a path to your file again: ")
-                return open_text(text_in)
+                return read_text(unformatted_text)
             else:
                 answer = input("[*] Invalid answer. Please, try again (Y/n): ")
     return text
@@ -90,7 +89,7 @@ def format_spaces(text: str) -> str:
     Returns:
         text (str) -- returns formatted text
     """
-    separators = ",./!?"
+    punctuation = ",./!?"
 
     for i in range(len(text)-1):
         # removing 2+ extra spaces in a row
@@ -98,7 +97,7 @@ def format_spaces(text: str) -> str:
             text = text[:i] + text[i+1:]
             return format_spaces(text)
         # formating spaces before/after special symbols
-        if text[i] in separators:
+        if text[i] in punctuation:
             # del before symbols
             if text[i-1] == " ":
                 text = text[:i-1] + text[i:]
@@ -148,8 +147,8 @@ def to_uppercase(text: str) -> str:
 
 
 def get_stats(text: str) -> str:
-    """Returns the statistics of the text. Contains:
-       quantity of spaces, lines, symbols, words.
+    """Returns the statistics of the text.
+    Contains quantity of spaces, lines, symbols, words.
 
     Arguments:
         text (str) -- stores the original text
@@ -188,8 +187,8 @@ def find_mistakes(text: str) -> str:
     text = text.lower().split()
 
     # Creating the Polish dict
-    with open("dict.txt", "rt") as file:
-        dictionary = file.read()
+    with open("dict.txt", "rt") as f:
+        dictionary = f.read()
     dictionary = dictionary.split(" ")
 
     # Searching mistakes
@@ -204,12 +203,12 @@ def find_mistakes(text: str) -> str:
     return info
 
 
-def text_out(out_path: str, text: str) -> None:
+def write_file(path: str, formatted_text: str) -> None:
     """Writes formatted text to the path.
 
     Arguments:
         path (str) -- stores a path where will be formatted file
-        text (str) -- stores a formatted text
+        formatted_text (str) -- stores a formatted text
 
     Raises:
         EnvironmentError -- occured by wrong extensions of writting file.
@@ -217,25 +216,27 @@ def text_out(out_path: str, text: str) -> None:
     Returns:
         message (str) -- succesful writting message
     """
-    message = f"\n[=========] 100% Text has been succesfully written to '{out_path}'\n"
-    if out_path.endswith((".txt", ".rtf", ".docx")):
-        if out_path != in_path:
-            with open(out_path, "wt") as file:
-                file.write(text)
+    positive_answers = ("Yes", 'Y', "y", "yes")
+    negative_answers = ("No", 'N', "n", "no")
+    message = f"\n[=========] 100% Text has been succesfully written to '{path}'\n"
+
+    if path.endswith((".txt", ".rtf", ".docx")):
+        if path != in_path:
+            with open(path, "wt") as f:
+                f.write(formatted_text)
                 return message
         else:
             answer = input(
                 "[*] Are you sure you want to rewrite the file? (Y/n): ")
-            if answer in POSITIVE_ANSWERS:
-                with open(out_path, "wt") as file:
-                    file.write(text)
+            if answer in positive_answers:
+                with open(path, "wt") as f:
+                    f.write(formatted_text)
                 return message
-            elif answer in NEGATIVE_ANSWERS:
-                out_path = input(
+            elif answer in negative_answers:
+                path = input(
                     "[*] Please, enter a path to your file again: ")
-                return text_out(out_path, text)
+                return write_file(path, formatted_text)
             else:
                 answer = input("[*] Invalid answer. Please, try again.")
     else:
         raise EnvironmentError("File's extension must be .txt, .rtf or .docx")
-    return
