@@ -1,0 +1,3 @@
+pierwsza litera zdania była napisana z małej litery . tutaj były dwie nadmiarowe spacje po kropce.
+Tutaj były 5 zbędne spacje     po słowie "spacje".
+Tutaj były tzw. wyjątki, czyli redukcje słow, po których duża litera nie robi się, ponieważ nie ma potrzeby np. tj. hello!
