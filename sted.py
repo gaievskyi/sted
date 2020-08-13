@@ -1,4 +1,4 @@
-"""Sted: text beautifier.
+"""STED: text beautifier.
 
 This script allows the user to format their text according to printing
 standarts. Supports autocapitalize, autospaces after commas and dots etc.
@@ -16,26 +16,28 @@ Contains the following functions:
 import functions
 
 
-def stedtxt(text_in: str, spaces=False, capitals=False, find_mistakes=False, stats=False, text_out=None) -> str:
+def stedtxt(unformatted_text: str,
+            spaces=False,
+            capitals=False,
+            find_mistakes=False,
+            stats=False,
+            path=None):
     """
     Main STED function
 
     Args:
-        text_in (str): path to your text file / printed actual text
+        unformatted_text (str): path to your text file / printed actual text
         spaces (bool): removes extra spaces in your text
         capitals (bool): replaces lowercase to Uppercase if a new sentence
         find_mistakes (bool): checks for mistakes in a text, prints a log
         stats (bool): prints statistics of your text
-        text_out (str or None): path to formatted file 
+        path (str or None): path to formatted file 
 
     Returns:
-        text_formatted(str), stats(str): prints formatted text, statistics to terminal.
+        formatted_text(str), stats(str): prints formatted text, statistics to terminal.
 
     """
-    MESSAGE_LOG = "-"*5 + " CONSOLE LOG:"
-    MESSAGE_TEXT = "-"*5 + " FORMATTED TEXT:\n"
-
-    original_text = functions.open_text(text_in)
+    original_text = functions.read_text(unformatted_text)
     formatted_text = original_text[:]
     mistakes = ""
     statistics = ""
@@ -58,14 +60,15 @@ def stedtxt(text_in: str, spaces=False, capitals=False, find_mistakes=False, sta
         statistics += functions.get_stats(formatted_text)
 
     # Writing a file if [text_out] is flagged:
-    if text_out is not None:
-        console_log += MESSAGE_LOG + "\n" if stats or find_mistakes else ""
-        return console_log + str(statistics) + "\n" + str(mistakes) + "\n" + functions.text_out(text_out, formatted_text)
+    if path is not None:
+        console_log += "[*] Additional info:\n" if stats or find_mistakes else ""
+        return console_log + str(statistics) + "\n" + str(mistakes) + "\n" + functions.write_file(path, formatted_text)
+
     # Returning results to terminal if not
     else:
-        console_log += MESSAGE_TEXT + formatted_text + "\n\n"
-        console_log += MESSAGE_LOG + "\n" if stats or find_mistakes else ""
-        return console_log + str(statistics) + "\n" + str(mistakes) + "\n"
+        console_log += "[*] Formatted text:\n" + formatted_text
+        console_log += "\n[*] Additional info:\n" if stats or find_mistakes else ""
+        return console_log + str(statistics) + "\n" + str(mistakes) if len(statistics) or len(mistakes) > 0 else console_log
 
 
 if __name__ == "__main__":
