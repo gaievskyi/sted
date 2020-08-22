@@ -1,50 +1,13 @@
 """
 This file can also be imported as a module and contains the following
 functions:
-    * read_text - opens the file with a text if it exists, otherwise reads [text_in] as a text.
-    * format_spaces - formats spaces in the text.
-    * to_uppercase - capitalizes the letters where it's needed.
-    * get_stats - returns the statistics of the text.
-    * find_mistakes - finds mistakes in the text and returns info. (supports Polish)
+    * read_text - opens a file with a text if exists, otherwise reads [text_in] as a text
+    * format_spaces - formats spaces in the text
+    * to_uppercase - capitalizes letters where needed (new sentence)
+    * get_stats - returns statistics (letters, sentences etc)
+    * find_mistakes - checks for mistakes in the text, prints log (supported: Polish)
     * write_file - writes formatted text to the path.
 """
-
-import argparse
-import sys
-
-
-def args():
-    """Arguments parser for console/terminal"""
-    parser = argparse.ArgumentParser(
-        description="Small Python text beautifier. Formats texts or text files.",
-        usage=f"python {sys.argv[0]} path/text [-h] [-s] [-c] [-m] [-t] [-o path]"
-    )
-    # Input file or text [required]
-    parser.add_argument("input", metavar="path/text", nargs=1,
-                        help="Path to source file/Text itself")
-    # Format spaces [optional]
-    parser.add_argument("-s", "--spaces", required=False, action="store_const", const=True,
-                        default=False, help="Formats spaces in the text. Removes exta spaces.")
-    # Formats capitals [optional]
-    parser.add_argument("-c", "--capitals", required=False, default=False, action="store_const",
-                        const=True, help="Capitalizes the letters where it's needed (new sentence, etc).")
-    # Find mistakes [optional]
-    parser.add_argument("-m", "--mistakes", required=False, default=False,
-                        action="store_const", const=True, help="Finds mistakes and prints info. Only Polish supported.")
-    # Print statistics [optional]
-    parser.add_argument("-t", "--stats", required=False, default=False, action="store_const",
-                        const=True, help="Returns the statistics of the text.")
-    # Write to file [optional]
-    parser.add_argument("-p", "--path", required=False, metavar="path",
-                        default=None, help="Path to output file('.txt', '.rtf', or '.doc')")
-    args = parser.parse_args()
-    _inpath = args.input[0]
-    _spaces = args.spaces
-    _capitals = args.capitals
-    _mistakes = args.mistakes
-    _stats = args.stats
-    _path = args.path
-    return _inpath, _spaces, _capitals, _mistakes, _stats, _path
 
 
 def read_text(unformatted_text: str) -> str:
@@ -72,8 +35,7 @@ def read_text(unformatted_text: str) -> str:
                 text = unformatted_text
                 break
             elif answer in negative_answers:
-                unformatted_text = input(
-                    "[*] Please, enter a path to your file again: ")
+                unformatted_text = input("[*] Please, enter a path to your file again: ")
                 return read_text(unformatted_text)
             else:
                 answer = input("[*] Invalid answer. Please, try again (Y/n): ")
@@ -218,25 +180,28 @@ def write_file(path: str, formatted_text: str) -> None:
     """
     positive_answers = ("Yes", 'Y', "y", "yes")
     negative_answers = ("No", 'N', "n", "no")
-    message = f"\n[=========] 100% Text has been succesfully written to '{path}'\n"
+    message = f"\n[=========] 100% Text has been succesfully written to '{path}'"
 
     if path.endswith((".txt", ".rtf", ".docx")):
-        if path != in_path:
-            with open(path, "wt") as f:
-                f.write(formatted_text)
-                return message
-        else:
-            answer = input(
-                "[*] Are you sure you want to rewrite the file? (Y/n): ")
-            if answer in positive_answers:
+        try:
+            if path != in_path:
                 with open(path, "wt") as f:
                     f.write(formatted_text)
                 return message
-            elif answer in negative_answers:
-                path = input(
-                    "[*] Please, enter a path to your file again: ")
-                return write_file(path, formatted_text)
             else:
-                answer = input("[*] Invalid answer. Please, try again.")
+                answer = input("[*] Are you sure you want to rewrite the file? (Y/n): ")
+                if answer in positive_answers:
+                    with open(path, "wt") as f:
+                        f.write(formatted_text)
+                    return message
+                elif answer in negative_answers:
+                    path = input("[*] Please, enter a path to your file again: ")
+                    return write_file(path, formatted_text)
+                else:
+                    answer = input("[*] Invalid answer. Please, try again.")
+        except NameError:
+            with open(path, "wt") as f:
+                f.write(formatted_text)
+                return message
     else:
         raise EnvironmentError("File's extension must be .txt, .rtf or .docx")
