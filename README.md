@@ -1,6 +1,6 @@
 # **STED**
 
-Small text beautifier. Formats directly typed texts and ready txt-files. :snake:
+Small text beautifier. Formats inline texts and ready txt-files. :snake:
 
 **Usage**:
 
