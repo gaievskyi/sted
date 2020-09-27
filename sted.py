@@ -22,7 +22,7 @@ def stedtxt(unformatted_text: str,
         capitals (bool): autocapitalize where needed (new sentence)
         find_mistakes (bool): check for mistakes in the text, print log
         stats (bool): print statistics (letters, sentences etc)
-        path (str or None): path to write the file
+        path (str or None): path where to write the file
     """
     formatted_text = f.read_text(unformatted_text)
     mistakes = ""
@@ -30,10 +30,11 @@ def stedtxt(unformatted_text: str,
     console_log = ""
 
     if spaces:
-        formatted_text = f.format_spaces(formatted_text)
+        formatted_text = f.remove_extra_spaces(formatted_text)
+        formatted_text = f.format_punctuation(formatted_text)
 
     if capitals:
-        formatted_text = f.to_uppercase(formatted_text)
+        formatted_text = f.format_uppercase(formatted_text)
 
     if find_mistakes:
         mistakes += f.find_mistakes(formatted_text)
@@ -41,7 +42,7 @@ def stedtxt(unformatted_text: str,
     if stats:
         statistics += f.get_stats(formatted_text)
 
-    formatted_text += "." if not formatted_text.endswith(".") else ""
+    formatted_text += "." if not formatted_text.endswith((".",  "!", "?")) else ""
 
     # Write a file if [text_out] is flagged:
     if path is not None:
