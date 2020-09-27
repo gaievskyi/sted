@@ -54,8 +54,8 @@ def remove_extra_spaces(string: str) -> str:
     Returns:
         text (str) -- returns formatted text
     """
-    result = re.sub(r"  ", " ", string)
-    return remove_extra_spaces(result) if re.findall(r"  ", result) else result
+    result = string.replace("  ", " ")
+    return result
 
 
 def format_punctuation(string: str) -> str:
