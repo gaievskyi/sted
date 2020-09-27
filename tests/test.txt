@@ -1,3 +1,7 @@
-pierwsza litera zdania była napisana z małej litery . tutaj były dwie nadmiarowe spacji po kropce.
-Tu było 5 zbędnych spacji     po słowie "spacje".
-Tutaj są tzw. wyjątki, czyli redukcje słow, po których duża litera się nie pisze, no np. tj. hello!
+hejka!to       jest     STED       test      w języku  polskim    .
+zaraz       przetestujemy           funckcję formatowania dużych liter   , tzn. każde nowe zdanie będzie się zaczynać małą literą .
+następnie - funkcja , która formatuje spacji po kropce ,  przycinku oraz innych znaków !
+oczywiście  ,       test tzw. wyjątków        , po których      duża litera nie      powinna się pisać    ,     mianowicie: np. tj. cykl. dosł.
+
+Co    ?     -     Jajco    !
+Jeśli     ostatnie      zdanie     nie     kończy    się     kropką,     wykrzyknikiem     lub    znakiem  zapytania, wkleimy automatycznie kropkę
