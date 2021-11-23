@@ -9,7 +9,7 @@ def read_text(unformatted_text: str) -> str:
         unformatted_text (str): path to a file OR inputed text
 
     Returns:
-        str: reads and returns text as a text
+        str: reads and returns text as a string
     """
     try:
         with open(unformatted_text, "rt") as f:
@@ -103,7 +103,7 @@ def format_uppercase(txt: str) -> str:
 
 
 def get_stats(txt: str) -> str:
-    """Return the statistics of the text.
+    """Return the statistics of a text.
     Contains quantity of spaces, lines, symbols, words.
 
     Arguments:
@@ -116,17 +116,20 @@ def get_stats(txt: str) -> str:
 
     spaces = txt.count(" ")
     lines = len(txt.splitlines())
-    for _ in separators:
-        txt = txt.replace(_, "")
+    for separator in separators:
+        txt = txt.replace(separator, "")
     symbols = len(txt) - spaces
     words = len(txt.strip().split(" "))
 
-    return (f"\n{'-'*(9+len(str(max(spaces, lines, symbols, words))))}\n"  # print line '----'
+    # line '----' for splitting output
+    line = f"\n{'-'*(9+len(str(max(spaces, lines, symbols, words))))}\n"
+
+    return (f"{line}"
             f"Spaces:  {spaces}\n"
             f"Lines:   {lines}\n"
             f"Symbols: {symbols}\n"
             f"Words:   {words}"
-            f"\n{'-'*(9+len(str(max(spaces, lines, symbols, words))))}")   # print line '----'
+            f"{line}")
 
 
 def find_mistakes(txt: str) -> str:
@@ -139,6 +142,7 @@ def find_mistakes(txt: str) -> str:
         str: mistakes log
     """
     separators = "\"\\!?.,{};:'\n()[-–|'<>«»~%“”„”_=*¯#+/]\f\t\r\v"
+    path_to_dict = "common/dict.txt"
 
     # Clean up the txt
     for el in separators:
@@ -147,8 +151,8 @@ def find_mistakes(txt: str) -> str:
     # Convert to the list & lowercase
     txt = txt.lower().split()
 
-    # Create the Polish dict
-    with open("common/dict.txt", "rt") as f:
+    # Create a Polish dict
+    with open(path_to_dict, "rt") as f:
         dictionary = f.read()
     dictionary = dictionary.split(" ")
 
@@ -166,7 +170,7 @@ def find_mistakes(txt: str) -> str:
 
 
 def write_file(path: str, formatted_text: str) -> None:
-    """"Writes formatted text to the path.
+    """"Write formatted text to the path.
 
     Args:
         path (str): path to write formatted text
@@ -181,31 +185,30 @@ def write_file(path: str, formatted_text: str) -> None:
     message = f"|> Text has been succesfully written into /{path}"
 
     # Alias for writing
-    def do_writing(path) -> None:
+    def _write(path) -> None:
         with open(path, "wt") as f:
             f.write(formatted_text)
 
     if not path.endswith((".txt", ".rtf", ".docx", ".doc", ".pdf", ".odt")):
         raise OSError("File extension must be "
                       "'.txt', '.rtf', '.docx', '.doc', '.pdf', '.odt'")
-    else:
-        # if text was read from file
-        try:
-            if path != in_path:
-                do_writing(path)
-                return message
-            # else: rewrite the file
-            answer = input(REWRITE)
-            while True:
-                if answer in POSITIVE_ANSWERS:
-                    do_writing(path)
-                    return message
-                elif answer in NEGATIVE_ANSWERS:
-                    path = input(ENTER_AGAIN)
-                    return write_file(path, formatted_text)
-                else:
-                    answer = input(INVALID_ANSWER_TRY_AGAIN)
-        # if text was read directly.
-        except NameError:
-            do_writing(path)
+    # if text was read from some file
+    try:
+        if path != in_path:
+            _write(path)
             return message
+        # else: rewrite the file
+        answer = input(REWRITE)
+        while True:
+            if answer in POSITIVE_ANSWERS:
+                _write(path)
+                return message
+            elif answer in NEGATIVE_ANSWERS:
+                path = input(ENTER_AGAIN)
+                return write_file(path, formatted_text)
+            else:
+                answer = input(INVALID_ANSWER_TRY_AGAIN)
+    # if text was read directly.
+    except NameError:
+        _write(path)
+        return message

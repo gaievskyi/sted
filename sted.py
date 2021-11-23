@@ -13,7 +13,7 @@ Example:
 """
 
 
-import scripts.functions as f
+import scripts.functions as fn
 import scripts.arguments as arg
 
 
@@ -44,27 +44,27 @@ def stedtxt(unformatted_text: str,
     Returns:
         str: formatted text
     """
-    formatted_text = f.read_text(unformatted_text)
+    formatted_text = fn.read_text(unformatted_text)
     out = ""
 
     if spaces:
-        formatted_text = f.remove_extra_spaces(formatted_text)
-        formatted_text = f.format_punctuation(formatted_text)
+        formatted_text = fn.remove_extra_spaces(formatted_text)
+        formatted_text = fn.format_punctuation(formatted_text)
 
     if capitals:
-        formatted_text = f.format_uppercase(formatted_text)
+        formatted_text = fn.format_uppercase(formatted_text)
 
     if stats:
-        out += f.get_stats(formatted_text) + "\n"
+        out += fn.get_stats(formatted_text)
 
     if find_mistakes:
-        out += f.find_mistakes(formatted_text) + "\n"
+        out += fn.find_mistakes(formatted_text) + "\n"
 
     # if `path` is defined, write the file:
     if path is not None:
         # if file extension is correct
         try:
-            return "\n" + f.write_file(path, formatted_text) + out
+            return "\n" + fn.write_file(path, formatted_text) + out
         # if file extension is invalid
         except OSError as e:
             return "|> " + str(e) + "\n" "Try again."
