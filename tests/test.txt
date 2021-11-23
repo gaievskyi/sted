@@ -1,5 +1,5 @@
 hejka!to       jest     STED       test      w języku  polskim    .
-zaraz       przetestujemy           funkcję formatowania dużych liter   , tzn. każde nowe zdanie będzie się zaczynać małą literą .
+zaraz       przetestujemy           funkcję formatowania dużych liter   , tzn. każde zdanie będzie się zaczynać duzą literą .
 następnie - funkcja , która formatuje spacji po kropce ,  przecinku oraz innych znakach !
 oczywiście  ,       test tzw. wyjątków        , po których      duża litera nie      powinna się pisać    ,     mianowicie: np. tj. cykl. dosł.
 
