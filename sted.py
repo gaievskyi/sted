@@ -8,7 +8,7 @@ Example:
         $ python3 sted.py <path or text> -sctm -p </path>
 
 .. More info on _Github repository:
-   https://github.com/beeklz/sted
+   https://github.com/gaievskyi/sted
 
 """
 
